@@ -9,8 +9,8 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  // Netlify에서 SSR 지원하므로 output: 'export' 제거
   trailingSlash: true,
+  output: 'standalone', // Netlify Next.js Runtime을 위해 standalone 모드 사용
   assetPrefix: process.env.NODE_ENV === 'production' ? undefined : '',
 }
 
