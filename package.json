@@ -5,9 +5,10 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "export": "next export",
     "start": "npx serve out",
-    "lint": "next lint"
+    "lint": "next lint",
+    "netlify-build": "next build",
+    "prepare-deploy": "node -e \"require('fs').copyFileSync('netlify.toml', 'out/netlify.toml'); require('fs').copyFileSync('public/_redirects', 'out/_redirects');\""
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",

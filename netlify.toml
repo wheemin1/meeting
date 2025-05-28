@@ -6,20 +6,18 @@
   NODE_VERSION = "18"
   NPM_FLAGS = "--legacy-peer-deps"
 
-# 리디렉션 규칙
+# SPA 리디렉션 규칙
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
 
-# Next.js 동적 라우팅 지원
+# 동적 라우트 리디렉션
 [[redirects]]
-  from = "/room/:roomId"
-  to = "/.netlify/functions/___netlify-handler"
+  from = "/room/*"
+  to = "/room/demo-room/index.html"
   status = 200
-
-[[redirects]]
-  from = "/api/*"
+  force = true
   to = "/.netlify/functions/___netlify-handler"
   status = 200
 
