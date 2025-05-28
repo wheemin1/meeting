@@ -10,8 +10,8 @@ const nextConfig = {
     unoptimized: true,
   },
   trailingSlash: true,
-  output: 'standalone', // Netlify Next.js Runtime을 위해 standalone 모드 사용
-  assetPrefix: process.env.NODE_ENV === 'production' ? undefined : '',
+  output: 'export', // 정적 HTML로 완전히 내보내기
+  distDir: 'out',   // 출력 디렉토리를 'out'으로 설정
 }
 
 export default nextConfig

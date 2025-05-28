@@ -1,20 +1,16 @@
 [build]
-  publish = ".next"
+  publish = "out"
   command = "npm run build"
 
 [build.environment]
   NODE_VERSION = "18"
-  NEXT_NETLIFY_RUNNER = "1"
   NPM_FLAGS = "--legacy-peer-deps"
 
-# Next.js 플러그인 설정
-[[plugins]]
-  package = "@netlify/plugin-nextjs"
-
-# Next.js 서버사이드 렌더링을 위한 함수 설정
-[functions]
-  included_files = [".next/standalone/**"]
-  node_bundler = "esbuild"
+# 리디렉션 규칙
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
 
 # Next.js 동적 라우팅 지원
 [[redirects]]
