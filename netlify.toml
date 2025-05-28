@@ -18,15 +18,10 @@
   to = "/room/demo-room/index.html"
   status = 200
   force = true
-  to = "/.netlify/functions/___netlify-handler"
-  status = 200
 
+# Next.js 정적 자산 처리
 [[redirects]]
   from = "/_next/*"
   to = "/_next/:splat"
   status = 200
-
-[[redirects]]
-  from = "/*"
-  to = "/.netlify/functions/___netlify-handler"
   status = 200
