@@ -24,4 +24,3 @@
   from = "/_next/*"
   to = "/_next/:splat"
   status = 200
-  status = 200
