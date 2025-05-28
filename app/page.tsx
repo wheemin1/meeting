@@ -19,16 +19,22 @@ export default function HomePage() {
   const router = useRouter()
 
   const createRoom = () => {
-    if (!roomName.trim()) return
+    console.log("Create room clicked", { roomName, organizerName })
+    
+    if (!roomName.trim()) {
+      console.log("Room name is empty")
+      return
+    }
 
     // LocalStorage 사용 가능 여부 확인
     if (!StorageService.isStorageAvailable()) {
+      console.log("Storage not available")
       alert("브라우저에서 로컬 저장소를 사용할 수 없습니다.")
       return
     }
 
-    // Generate a unique room ID
-    const roomId = Math.random().toString(36).substring(2, 15)
+    // 정적 export를 위해 demo-room을 사용
+    const roomId = 'demo-room'
 
     // Create room data
     const roomData: Room = {
@@ -39,16 +45,21 @@ export default function HomePage() {
       participants: [],
     }
 
+    console.log("Creating room with data:", roomData)
+
     // Save room data using StorageService
     const success = StorageService.saveRoom(roomData)
     
     if (!success) {
+      console.log("Failed to save room")
       alert("방 생성에 실패했습니다. 다시 시도해주세요.")
       return
     }
 
-    // Navigate to the room
-    router.push(`/room/${roomId}`)
+    console.log("Room saved successfully, navigating to demo-room")
+    
+    // Navigate to the demo room (정적 export용)
+    router.push(`/room/demo-room/`)
   }
 
   return (
