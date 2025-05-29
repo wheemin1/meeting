@@ -1,0 +1,103 @@
+/* Mobile-specific styles */
+@media (max-width: 640px) {
+  h1 {
+    font-size: 1.75rem !important;
+  }
+  h2 {
+    font-size: 1.5rem !important;
+  }
+  h3 {
+    font-size: 1.25rem !important;
+  }
+  .card-title {
+    font-size: 1.125rem !important;
+  }
+  .text-xl {
+    font-size: 1.125rem !important;
+  }
+  .text-lg {
+    font-size: 1rem !important;
+  }
+  .text-md {
+    font-size: 0.9375rem !important;
+  }
+  .text-sm {
+    font-size: 0.875rem !important;
+  }
+  .text-xs {
+    font-size: 0.75rem !important;
+  }
+  
+  /* Adjust padding and margins */
+  .p-6 {
+    padding: 1rem !important;
+  }
+  .p-4 {
+    padding: 0.75rem !important;
+  }
+  .gap-4 {
+    gap: 0.75rem !important;
+  }
+    /* Make buttons more compact on mobile */
+  button.text-lg, 
+  .btn.text-lg {
+    font-size: 0.9375rem !important;
+    padding-top: 0.625rem !important;
+    padding-bottom: 0.625rem !important;
+    height: auto !important;
+  }
+  
+  /* Improve room page copy button */
+  .copy-button {
+    padding: 0.5rem 0.75rem !important;
+    font-size: 0.8125rem !important;
+  }
+  
+  /* Join/update button */
+  .join-button, 
+  .update-button {
+    height: auto !important;
+    padding: 0.75rem !important;
+  }
+  
+  /* Participant cards */
+  .participant-card {
+    padding: 0.75rem !important;
+  }
+  /* Improve select dropdown on mobile */
+  .select-trigger {
+    height: 2.5rem !important;
+    font-size: 0.875rem !important;
+  }
+  
+  /* Make select items more readable on mobile */
+  .select-content .select-item {
+    font-size: 0.875rem !important;
+  }
+  
+  /* Suggested times section */
+  .suggested-time {
+    padding: 0.75rem !important;
+  }
+    /* Badge for suggested times */
+  .suggested-time-badge {
+    font-size: 0.75rem !important;
+    padding: 0.25rem 0.5rem !important;
+  }
+  
+  /* Time grid buttons */
+  .time-grid-button {
+    padding: 0.375rem !important;
+    font-size: 0.6875rem !important;
+  }
+  
+  /* Local times section */
+  .local-time-container {
+    padding: 0.5rem !important;
+  }
+  
+  /* Participant time display */
+  .participant-time {
+    font-size: 0.8125rem !important;
+  }
+}

@@ -5,9 +5,8 @@ export const getDemoRoom = (): Room => {
   return {
     id: 'demo-room',
     name: 'Demo Meeting',
-    description: 'This is a demo meeting room for testing purposes',
+    organizer: 'Demo Organizer',
     participants: [],
-    createdAt: new Date().toISOString(),
-    timezone: 'Asia/Seoul'
+    createdAt: new Date().toISOString()
   };
 };

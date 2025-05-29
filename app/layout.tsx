@@ -1,5 +1,6 @@
 import type React from "react"
 import "./globals.css"
+import "../styles/mobile.css"
 import { LanguageProvider } from "@/lib/language-context"
 
 export default function RootLayout({

@@ -24,10 +24,13 @@ export class TimeZoneService {
       return timeStr
     }
   }
-
   // 참가자들의 공통 가능한 시간대를 찾습니다
   static findCommonTimeSlots(participants: Participant[]): TimeSlot[] {
-    if (participants.length < 2) return []
+    // 최소 2명 이상의 참가자가 필요합니다
+    if (participants.length < 2) {
+      console.log("최소 2명 이상의 참가자가 필요합니다. 현재 참가자 수:", participants.length);
+      return [];
+    }
 
     const commonSlots: TimeSlot[] = []
 

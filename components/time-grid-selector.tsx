@@ -106,19 +106,19 @@ export default function TimeGridSelector({ selectedTimeSlots, onTimeSlotsChange 
               {t("availability")}
             </span>
           </CardTitle>
-          <div className="flex gap-2 flex-wrap">
-            <Button variant="outline" size="sm" onClick={clearAll} className="rounded-lg border-2 hover:bg-red-50 hover:border-red-200">
+          <div className="flex gap-1 sm:gap-2 flex-wrap">
+            <Button variant="outline" size="sm" onClick={clearAll} className="text-xs sm:text-sm rounded-lg border-2 hover:bg-red-50 hover:border-red-200">
               {t("clearAll")}
             </Button>
-            <Button variant="outline" size="sm" onClick={selectMorning} className="rounded-lg border-2 hover:bg-yellow-50 hover:border-yellow-200 flex items-center gap-1">
+            <Button variant="outline" size="sm" onClick={selectMorning} className="text-xs sm:text-sm rounded-lg border-2 hover:bg-yellow-50 hover:border-yellow-200 flex items-center gap-1">
               <Sun className="w-3 h-3" />
               Morning
             </Button>
-            <Button variant="outline" size="sm" onClick={selectBusinessHours} className="rounded-lg border-2 hover:bg-blue-50 hover:border-blue-200 flex items-center gap-1">
+            <Button variant="outline" size="sm" onClick={selectBusinessHours} className="text-xs sm:text-sm rounded-lg border-2 hover:bg-blue-50 hover:border-blue-200 flex items-center gap-1">
               <Coffee className="w-3 h-3" />
               9AM-5PM
             </Button>
-            <Button variant="outline" size="sm" onClick={selectEvening} className="rounded-lg border-2 hover:bg-purple-50 hover:border-purple-200 flex items-center gap-1">
+            <Button variant="outline" size="sm" onClick={selectEvening} className="text-xs sm:text-sm rounded-lg border-2 hover:bg-purple-50 hover:border-purple-200 flex items-center gap-1">
               <Moon className="w-3 h-3" />
               Evening
             </Button>
@@ -127,12 +127,12 @@ export default function TimeGridSelector({ selectedTimeSlots, onTimeSlotsChange 
         <p className="text-gray-600">{t("selectTimeSlots")}</p>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="grid grid-cols-6 gap-2 max-h-80 overflow-y-auto p-2 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl">
+        <div className="grid grid-cols-4 sm:grid-cols-6 gap-1 sm:gap-2 max-h-80 overflow-y-auto p-2 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl">
           {timeSlots.map((timeSlot) => (
             <button
               key={timeSlot}
               onClick={() => toggleTimeSlot(timeSlot)}
-              className={`p-3 rounded-lg text-xs font-medium transition-all duration-300 transform hover:scale-105 ${getTimeSlotStyle(timeSlot)}`}
+              className={`p-2 sm:p-3 rounded-lg text-[10px] sm:text-xs font-medium transition-all duration-300 transform hover:scale-105 time-grid-button ${getTimeSlotStyle(timeSlot)}`}
             >
               {getTimeSlotDisplay(timeSlot)}
             </button>

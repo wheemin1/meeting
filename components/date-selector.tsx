@@ -76,11 +76,11 @@ export default function DateSelector({ selectedDates, onDatesChange }: DateSelec
               {t("meetingDates")}
             </span>
           </CardTitle>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={clearAll} className="rounded-lg border-2 hover:bg-red-50 hover:border-red-200">
+          <div className="flex gap-1 sm:gap-2">
+            <Button variant="outline" size="sm" onClick={clearAll} className="text-xs sm:text-sm rounded-lg border-2 hover:bg-red-50 hover:border-red-200">
               {t("clearAll")}
             </Button>
-            <Button variant="outline" size="sm" onClick={selectAll} className="rounded-lg border-2 hover:bg-blue-50 hover:border-blue-200">
+            <Button variant="outline" size="sm" onClick={selectAll} className="text-xs sm:text-sm rounded-lg border-2 hover:bg-blue-50 hover:border-blue-200">
               {t("selectAll")}
             </Button>
           </div>
@@ -88,7 +88,7 @@ export default function DateSelector({ selectedDates, onDatesChange }: DateSelec
         <p className="text-gray-600">{t("selectDates")}</p>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="grid grid-cols-7 gap-3">
+        <div className="grid grid-cols-4 sm:grid-cols-7 gap-1 sm:gap-3">
           {availableDates.slice(0, 21).map((date) => {
             const isSelected = selectedDates.includes(date)
             const isToday = new Date(date).toDateString() === new Date().toDateString()
@@ -97,7 +97,7 @@ export default function DateSelector({ selectedDates, onDatesChange }: DateSelec
               <button
                 key={date}
                 onClick={() => toggleDate(date)}
-                className={`p-3 rounded-xl text-sm transition-all duration-300 transform hover:scale-105 ${
+                className={`p-2 sm:p-3 rounded-xl text-[10px] sm:text-sm transition-all duration-300 transform hover:scale-105 date-selector-button ${
                   isSelected 
                     ? "bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-lg" 
                     : isToday

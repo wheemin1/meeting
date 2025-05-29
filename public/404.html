@@ -3,12 +3,45 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>페이지를 찾을 수 없습니다</title>
-  <script>
-    // SPA에서 새로고침 문제 해결을 위한 리디렉션
+  <title>Page Not Found - Meeting Timezone Planner</title>
+  <script>    // Handle room redirects
     const path = window.location.pathname;
-    const redirectTo = path === '/404.html' ? '/' : path;
-    window.location.href = redirectTo;
+    if (path.startsWith('/room/')) {
+      // Try to load room data from localStorage first
+      const pathParts = path.split('/');
+      let roomId = pathParts[2];
+      
+      // 'index.html'이 포함된 경우 제거
+      if (roomId && roomId.endsWith('index.html')) {
+        roomId = roomId.replace('index.html', '');
+      }
+      
+      // 빈 문자열인 경우 (예: /room//index.html)
+      if (!roomId || roomId === '') {
+        roomId = 'demo-room';
+      }
+      
+      const roomKey = `room_${roomId}`;
+      
+      try {
+        const roomExists = localStorage.getItem(roomKey);
+        if (roomExists) {
+          // Room exists, stay on this page
+          console.log('Room found in localStorage:', roomId);
+        } else {
+          // Room doesn't exist, redirect to demo room
+          console.log('Room not found, redirecting to demo room');
+          window.location.href = '/room/demo-room/';
+        }
+      } catch (e) {
+        // Error accessing localStorage, redirect to demo room
+        console.error('Error accessing localStorage:', e);
+        window.location.href = '/room/demo-room/';
+      }
+    } else {
+      // For non-room pages, redirect to home
+      window.location.href = '/';
+    }
   </script>
   <style>
     body {
@@ -42,13 +75,27 @@
       font-size: 14px;
       color: #666;
     }
+    .spinner {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(0,0,0,0.1);
+      border-radius: 50%;
+      border-top-color: #3498db;
+      animation: spin 1s ease-in-out infinite;
+      margin-bottom: 20px;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>페이지를 찾을 수 없습니다</h1>
-    <p>죄송합니다. 요청하신 페이지를 찾을 수 없습니다.</p>
-    <p class="redirect-text">잠시 후 홈페이지로 이동합니다...</p>
+    <div class="spinner"></div>
+    <h1>Page Not Found</h1>
+    <p>The page you're looking for doesn't exist or has been moved.</p>
+    <p class="redirect-text">Redirecting to the appropriate page...</p>
   </div>
 </body>
 </html>

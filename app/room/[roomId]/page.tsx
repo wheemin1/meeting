@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { Clock, Users, MapPin, Copy, CheckCircle, AlertCircle, Globe, Sparkles, Star, Calendar } from 'lucide-react'
 import { formatInTimeZone } from "date-fns-tz"
+import { useParams } from "next/navigation"
 import { useLanguage } from "@/lib/language-context"
 import LanguageSwitcher from "@/components/language-switcher"
 import DateSelector from "@/components/date-selector"
@@ -17,12 +18,11 @@ import { Room, Participant, TimeSlot } from "@/types"
 import { getCitiesByLanguage } from "@/data/cities"
 import { StorageService } from "@/lib/storage"
 import { TimeZoneService } from "@/lib/timezone"
-import { getDemoRoom } from "@/lib/demo-data"
 
 export default function RoomPage() {
   const { t, language } = useLanguage()
-  // 동적 매개변수 대신 고정된 roomId 사용
-  const roomId = 'demo-room'
+  const params = useParams()
+  const roomId = params.roomId as string
 
   const [room, setRoom] = useState<Room | null>(null)
   const [currentUser, setCurrentUser] = useState<Participant | null>(null)
@@ -42,29 +42,24 @@ export default function RoomPage() {
     loadRoom()
     const interval = setInterval(loadRoom, 3000) // Refresh every 3 seconds
     return () => clearInterval(interval)
-  }, [])
-  const loadRoom = () => {
-    let roomData = StorageService.getRoom(roomId)
-    
-    // 방이 없으면 데모 방 생성
-    if (!roomData) {
-      console.log("Room not found, creating demo room")
-      roomData = getDemoRoom()
-      StorageService.saveRoom(roomData)
-    }
-    
-    setRoom(roomData)
+  }, [roomId])
 
-    // Check if current user is already in the room
-    const userId = StorageService.getUserId() || StorageService.generateUserId()
-    const existingParticipant = roomData.participants.find((p: Participant) => p.id === userId)
-    if (existingParticipant) {
-      setCurrentUser(existingParticipant)
-      setIsJoined(true)
-      setName(existingParticipant.name)
-      setSelectedCity(existingParticipant.city)
-      setSelectedDates(existingParticipant.availableDates || [])
-      setSelectedTimeSlots(existingParticipant.availableTimeSlots || [])
+  const loadRoom = () => {
+    const roomData = StorageService.getRoom(roomId)
+    if (roomData) {
+      setRoom(roomData)
+
+      // Check if current user is already in the room
+      const userId = StorageService.getUserId() || StorageService.generateUserId()
+      const existingParticipant = roomData.participants.find((p: Participant) => p.id === userId)
+      if (existingParticipant) {
+        setCurrentUser(existingParticipant)
+        setIsJoined(true)
+        setName(existingParticipant.name)
+        setSelectedCity(existingParticipant.city)
+        setSelectedDates(existingParticipant.availableDates || [])
+        setSelectedTimeSlots(existingParticipant.availableTimeSlots || [])
+      }
     }
   }
 
@@ -117,11 +112,12 @@ export default function RoomPage() {
     }
   }
   const copyRoomLink = () => {
-    const baseUrl = window.location.origin
-    const link = `${baseUrl}/room/demo-room/`
-    navigator.clipboard.writeText(link)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+    // index.html을 제거하여 더 깔끔한 URL 생성
+    const url = new URL(window.location.href);
+    const cleanUrl = url.origin + url.pathname.replace(/\/index\.html$/, '/');
+    navigator.clipboard.writeText(cleanUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   }
 
   // Calculate overlapping time slots using TimeZoneService
@@ -139,18 +135,19 @@ export default function RoomPage() {
           <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-red-400/20 to-pink-400/20 rounded-full blur-3xl"></div>
           <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-tr from-blue-400/20 to-purple-400/20 rounded-full blur-3xl"></div>
         </div>
-          <div className="absolute top-4 right-4 z-10">
+        
+        <div className="absolute top-4 right-4 z-10">
           <LanguageSwitcher />
         </div>
-        <Card className="max-w-md w-full text-center p-8 border-0 shadow-2xl bg-white/80 backdrop-blur-sm">
+          <Card className="max-w-md w-full text-center p-8 border-0 shadow-2xl bg-white/80 backdrop-blur-sm">
           <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
           <h2 className="text-2xl font-bold mb-2 text-gray-800">{t("roomNotFound")}</h2>
           <p className="text-gray-600 mb-6">{t("checkLink")}</p>
           <Button
-            onClick={() => window.location.href = '/'}
+            onClick={() => window.location.href = '/room/demo-room/'}
             className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
           >
-            {t("returnHome")}
+            {t("orGoToDemo")}
           </Button>
         </Card>
       </div>
@@ -170,31 +167,34 @@ export default function RoomPage() {
         <LanguageSwitcher />
       </div>
 
-      <div className="max-w-7xl mx-auto relative z-10">        {/* Room Header */}
-        <div className="text-center mb-8 sm:mb-12">
-          <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl mb-4 sm:mb-6 shadow-lg">
-            <Globe className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+      <div className="max-w-7xl mx-auto relative z-10">
+        {/* Room Header */}
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl mb-6 shadow-lg">
+            <Globe className="w-8 h-8 text-white" />
           </div>
           
-          <h1 className="text-2xl sm:text-4xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-2">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-2">
             {t("title")}
           </h1>
           
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2 sm:mb-3">{room.name}</h2>
+          <h2 className="text-2xl font-bold text-gray-800 mb-3">{room.name}</h2>
           
-          <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">
+          <p className="text-gray-600 mb-6">
             {t("organizer")}: {room.organizer}
-          </p>          <div className="flex items-center justify-center gap-2 sm:gap-4 flex-wrap">
+          </p>
+
+          <div className="flex items-center justify-center gap-4">
             <Button 
               onClick={copyRoomLink} 
               variant="outline" 
-              className="flex items-center gap-1 sm:gap-2 border-2 hover:bg-blue-50 hover:border-blue-300 rounded-xl transition-all duration-300 text-xs sm:text-sm"
+              className="flex items-center gap-2 border-2 hover:bg-blue-50 hover:border-blue-300 rounded-xl transition-all duration-300"
             >
-              {copied ? <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 text-green-500" /> : <Copy className="w-3 h-3 sm:w-4 sm:h-4" />}
+              {copied ? <CheckCircle className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
               {copied ? t("copied") : t("copyLink")}
             </Button>
-            <Badge className="flex items-center gap-1 sm:gap-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white px-3 py-1 sm:px-4 sm:py-2 rounded-xl shadow-lg text-xs sm:text-sm">
-              <Users className="w-3 h-3 sm:w-4 sm:h-4" />
+            <Badge className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-xl shadow-lg">
+              <Users className="w-4 h-4" />
               {room.participants.length} {t("participants")}
             </Badge>
           </div>
@@ -214,7 +214,8 @@ export default function RoomPage() {
                   </span>
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-6">                <div className="space-y-2">
+              <CardContent className="space-y-6">
+                <div className="space-y-2">
                   <Label htmlFor="name" className="text-sm font-semibold text-gray-700">{t("name")}</Label>
                   <Input
                     id="name"
@@ -222,19 +223,19 @@ export default function RoomPage() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     disabled={isJoined}
-                    className="h-10 sm:h-12 border-2 border-gray-200 focus:border-blue-400 rounded-xl transition-all duration-200"
+                    className="h-12 border-2 border-gray-200 focus:border-blue-400 rounded-xl transition-all duration-200"
                   />
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="city" className="text-sm font-semibold text-gray-700">{t("city")}</Label>
                   <Select onValueChange={setSelectedCity} value={selectedCity} disabled={isJoined}>
-                    <SelectTrigger className="h-10 sm:h-12 border-2 border-gray-200 focus:border-blue-400 rounded-xl select-trigger">
+                    <SelectTrigger className="h-12 border-2 border-gray-200 focus:border-blue-400 rounded-xl">
                       <SelectValue placeholder={t("cityPlaceholder")} />
                     </SelectTrigger>
-                    <SelectContent className="max-h-[300px]">
+                    <SelectContent>
                       {cityList.map((city) => (
-                        <SelectItem key={city.name} value={city.name} className="text-xs sm:text-sm">
+                        <SelectItem key={city.name} value={city.name}>
                           {city.name}
                         </SelectItem>
                       ))}
@@ -267,20 +268,21 @@ export default function RoomPage() {
             <TimeGridSelector selectedTimeSlots={selectedTimeSlots} onTimeSlotsChange={setSelectedTimeSlots} />
 
             <div className="flex justify-center">
-              {!isJoined ? (                <Button
+              {!isJoined ? (
+                <Button
                   onClick={joinRoom}
                   disabled={
                     !name.trim() || !selectedCity || selectedDates.length === 0 || selectedTimeSlots.length === 0
                   }
-                  className="w-full h-12 sm:h-14 text-base sm:text-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                  className="w-full h-14 text-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                 >
-                  <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                  <Sparkles className="w-5 h-5 mr-2" />
                   {t("joinButton")}
                 </Button>
               ) : (
                 <Button 
                   onClick={updateAvailability} 
-                  className="w-full h-12 sm:h-14 text-base sm:text-lg rounded-xl border-2 border-blue-300 hover:bg-blue-50 transition-all duration-300" 
+                  className="w-full h-14 text-lg rounded-xl border-2 border-blue-300 hover:bg-blue-50 transition-all duration-300" 
                   variant="outline"
                 >
                   {t("updateButton")}
@@ -305,21 +307,22 @@ export default function RoomPage() {
                   <p className="text-gray-500 text-center py-8">{t("noParticipants")}</p>
                 ) : (
                   <div className="space-y-4">
-                    {room.participants.map((participant, index) => (                      <div key={participant.id} className="participant-card p-3 sm:p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl border border-gray-200 hover:shadow-md transition-all duration-300">
-                        <div className="flex items-center justify-between mb-2 sm:mb-3">
-                          <div className="flex items-center gap-2 sm:gap-3">
-                            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
+                    {room.participants.map((participant, index) => (
+                      <div key={participant.id} className="p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl border border-gray-200 hover:shadow-md transition-all duration-300">
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
                               {participant.name.charAt(0).toUpperCase()}
                             </div>
                             <div>
-                              <div className="font-semibold text-gray-800 text-sm sm:text-base">{participant.name}</div>
-                              <div className="text-xs sm:text-sm text-gray-600 flex items-center gap-1">
+                              <div className="font-semibold text-gray-800">{participant.name}</div>
+                              <div className="text-sm text-gray-600 flex items-center gap-1">
                                 <MapPin className="w-3 h-3" />
                                 {participant.city}
                               </div>
                             </div>
                           </div>
-                          <Badge variant="secondary" className="bg-blue-100 text-blue-800 text-xs">
+                          <Badge variant="secondary" className="bg-blue-100 text-blue-800">
                             #{index + 1}
                           </Badge>
                         </div>
@@ -358,30 +361,36 @@ export default function RoomPage() {
               <CardContent>
                 {overlappingSlots.length > 0 ? (
                   <div className="space-y-4">
-                    {overlappingSlots.slice(0, 10).map((slot, index) => (                      <div
+                    {overlappingSlots.slice(0, 10).map((slot, index) => (
+                      <div
                         key={`${slot.date}-${slot.time}`}
-                        className="p-3 sm:p-6 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02]"
+                        className="p-6 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02]"
                       >
-                        <div className="flex items-center justify-between mb-4">                          <Badge className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-2 sm:px-3 py-0.5 sm:py-1 rounded-lg shadow-sm text-xs">
+                        <div className="flex items-center justify-between mb-4">
+                          <Badge className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-3 py-1 rounded-lg shadow-sm">
                             <Star className="w-3 h-3 mr-1" />
                             {t("option")} {index + 1}
-                          </Badge>                          <div className="text-xs sm:text-sm text-gray-600 bg-white px-2 sm:px-3 py-0.5 sm:py-1 rounded-lg border border-green-200">
+                          </Badge>
+                          <div className="text-sm text-gray-600 bg-white px-3 py-1 rounded-lg border border-green-200">
                             {new Date(slot.date).toLocaleDateString()}
                           </div>
                         </div>
-                          <div className="text-lg sm:text-xl font-bold text-green-800 mb-2 sm:mb-4 flex items-center gap-2">
-                          <Clock className="w-4 h-4 sm:w-5 sm:h-5" />
+                        
+                        <div className="text-xl font-bold text-green-800 mb-4 flex items-center gap-2">
+                          <Clock className="w-5 h-5" />
                           {slot.time} ({slot.participants[0]}'s timezone)
                         </div>
-                          <div className="text-xs sm:text-sm text-gray-600 mb-2 sm:mb-3 font-medium">{t("localTimes")}</div>
-                        <div className="space-y-1 sm:space-y-2">
+                        
+                        <div className="text-sm text-gray-600 mb-3 font-medium">{t("localTimes")}</div>
+                        <div className="space-y-2">
                           {room.participants.map((p) => {
                             const datetime = new Date(`${slot.date}T${slot.time}:00`)
                             const localTime = formatInTimeZone(datetime, p.timezone, "yyyy-MM-dd HH:mm")
                             return (
-                              <div key={p.id} className="flex items-center justify-between bg-white p-2 sm:p-3 rounded-lg border border-green-200">
-                                <span className="font-medium text-gray-700 text-xs sm:text-sm">{p.name}</span>
-                                <span className="text-green-700 font-semibold text-xs sm:text-sm">{localTime}</span>                              </div>
+                              <div key={p.id} className="flex items-center justify-between bg-white p-3 rounded-lg border border-green-200">
+                                <span className="font-medium text-gray-700">{p.name}</span>
+                                <span className="text-green-700 font-semibold">{localTime}</span>
+                              </div>
                             )
                           })}
                         </div>

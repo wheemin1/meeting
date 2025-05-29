@@ -1,26 +1,49 @@
 [build]
   publish = "out"
-  command = "npm run build"
+  command = "npm run build && bash ./post-build.sh"
 
 [build.environment]
   NODE_VERSION = "18"
   NPM_FLAGS = "--legacy-peer-deps"
 
-# SPA 리디렉션 규칙
+# 동적 라우트 리디렉션 (최우선)
 [[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-
-# 동적 라우트 리디렉션
-[[redirects]]
-  from = "/room/*"
-  to = "/room/demo-room/index.html"
-  status = 200
+  from = "/room"
+  to = "/room/demo-room/"
+  status = 301
   force = true
 
-# Next.js 정적 자산 처리
+[[redirects]]
+  from = "/room/"
+  to = "/room/demo-room/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/room/*/index.html"
+  to = "/room/demo-room/"
+  status = 200
+
+[[redirects]]
+  from = "/room/*"
+  to = "/room/demo-room/"
+  status = 200
+
+# Handle all room/* routes
+[[redirects]]
+  from = "/room/*"
+  to = "/room/demo-room/"
+  status = 200
+  force = false
+
+# 정적 자산 처리
 [[redirects]]
   from = "/_next/*"
   to = "/_next/:splat"
+  status = 200
+
+# SPA 리디렉션 규칙 (최후순위)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
   status = 200
