@@ -6,11 +6,17 @@ import { useRouter } from 'next/navigation'
 export default function FallbackPage() {
   const router = useRouter()
   const [message, setMessage] = useState('Redirecting to demo room...')
-
   useEffect(() => {
     // Any dynamic room will redirect to our demo room for static export
-    router.push('/room/demo-room/')
-  }, [router])
+    try {
+      console.log("Redirecting to demo room...");
+      // 직접 window.location을 사용하여 강제 이동
+      window.location.href = '/room/demo-room/';
+    } catch (error) {
+      console.error("Redirection error:", error);
+      router.push('/room/demo-room/');
+    }
+  }, [])
 
   return (
     <div className="container flex flex-col items-center justify-center min-h-screen">

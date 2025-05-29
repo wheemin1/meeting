@@ -134,6 +134,13 @@ export default function HomePage() {
                 <Sparkles className="w-5 h-5 mr-3" />
                 {t("createRoomButton")}
               </Button>
+
+              {/* 데모 룸으로 직접 이동하는 버튼 추가 */}
+              <div className="pt-4 text-center">
+                <a href="/room/demo-room/" className="text-blue-600 hover:text-blue-800 underline">
+                  또는 데모룸으로 바로 이동하기
+                </a>
+              </div>
             </CardContent>
           </Card>
         </div>
